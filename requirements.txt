@@ -1,5 +1,5 @@
 ﻿asgiref==3.11.1
-Django==6.0.8
+Django==4.0.8
 gunicorn==26.0.0
 packaging==26.2
 PyMySQL==1.2.0

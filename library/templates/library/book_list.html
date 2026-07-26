@@ -1,0 +1,74 @@
+{% extends 'library/base.html' %}
+
+{% block title %}Books Catalog - Athena LMS{% endblock %}
+
+{% block content %}
+<div class="top-bar">
+    <div class="page-title">
+        <h1>Books Catalog</h1>
+        <p>Browse and search the library's physical inventory.</p>
+    </div>
+    <div>
+        <a href="{% url 'book_create' %}" class="btn btn-primary">➕ Add New Book</a>
+    </div>
+</div>
+
+<!-- Search Widget -->
+<div class="glass-card mb-4">
+    <form method="GET" action="{% url 'book_list' %}" class="search-container">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search by title, author, genre or ISBN..." class="form-control search-input">
+        <button type="submit" class="btn btn-primary">Search</button>
+        {% if query %}
+            <a href="{% url 'book_list' %}" class="btn btn-secondary">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Books Grid -->
+<div class="cards-grid">
+    {% for book in books %}
+        <div class="glass-card book-card">
+            <div class="book-card-header">
+                <div>
+                    <span class="badge badge-info mb-4" style="margin-bottom: 0.5rem;">{{ book.genre|default:"General" }}</span>
+                    <h3 class="book-title">{{ book.title }}</h3>
+                    <p class="book-author">by {{ book.author }}</p>
+                </div>
+            </div>
+            
+            <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.4; flex-grow: 1;">
+                {{ book.description|default:"No description provided."|truncatechars:120 }}
+            </p>
+
+            <div class="book-meta">
+                <div class="meta-row">
+                    <span>ISBN:</span>
+                    <strong>{{ book.isbn }}</strong>
+                </div>
+                <div class="meta-row">
+                    <span>Published:</span>
+                    <span>{{ book.published_date|default:"Unknown" }}</span>
+                </div>
+                <div class="meta-row" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px dashed var(--border-color);">
+                    <span>Status:</span>
+                    {% if book.available_copies > 0 %}
+                        <span class="badge badge-success">{{ book.available_copies }} / {{ book.total_copies }} Available</span>
+                    {% else %}
+                        <span class="badge badge-danger">Out of Stock</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="btn-group" style="margin-top: 0.5rem;">
+                <a href="{% url 'book_edit' book.pk %}" class="btn btn-secondary btn-sm" style="flex-grow: 1;">✏️ Edit</a>
+                <a href="{% url 'book_delete' book.pk %}" class="btn btn-danger btn-sm">🗑️ Delete</a>
+            </div>
+        </div>
+    {% empty %}
+        <div class="glass-card text-center" style="grid-column: 1 / -1; padding: 3rem 0;">
+            <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 1rem;">No books found matching your criteria.</p>
+            <a href="{% url 'book_create' %}" class="btn btn-primary">Create Book Entry</a>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

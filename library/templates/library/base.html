@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Athena Library System{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'library/css/styles.css' %}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand-section">
+                <span class="brand-icon">🏛️</span>
+                <span class="brand-name">Athena LMS</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <li class="nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <a href="{% url 'dashboard' %}">
+                        <span>📊</span> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item {% if 'book' in request.resolver_match.url_name %}active{% endif %}">
+                    <a href="{% url 'book_list' %}">
+                        <span>📚</span> Books Catalog
+                    </a>
+                </li>
+                <li class="nav-item {% if 'member' in request.resolver_match.url_name %}active{% endif %}">
+                    <a href="{% url 'member_list' %}">
+                        <span>👥</span> Members Registry
+                    </a>
+                </li>
+                <li class="nav-item {% if 'borrow' in request.resolver_match.url_name or 'transaction' in request.resolver_match.url_name %}active{% endif %}">
+                    <a href="{% url 'transaction_list' %}">
+                        <span>🔄</span> Transactions
+                    </a>
+                </li>
+            </nav>
+            
+            <div style="font-size: 0.8rem; text-align: center; color: var(--text-secondary); border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                <p>Athena LMS &copy; 2026</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-wrapper">
+            <!-- Toast Alert Notifications -->
+            {% if messages %}
+                <div class="messages-container">
+                    {% for message in messages %}
+                        <div class="message-alert alert-{{ message.tags }}">
+                            <span>{{ message }}</span>
+                            <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+</body>
+</html>

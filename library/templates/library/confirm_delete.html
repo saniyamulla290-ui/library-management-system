@@ -1,0 +1,31 @@
+{% extends 'library/base.html' %}
+
+{% block title %}Confirm Deletion - Athena LMS{% endblock %}
+
+{% block content %}
+<div class="top-bar">
+    <div class="page-title">
+        <h1>Confirm Deletion</h1>
+        <p>Warning: This action is permanent and cannot be undone.</p>
+    </div>
+</div>
+
+<div class="glass-card form-container text-center" style="padding: 2.5rem 2rem;">
+    <div style="font-size: 3rem; margin-bottom: 1.5rem;">⚠️</div>
+    
+    <h2 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem;">Delete {{ type }}?</h2>
+    
+    <p style="color: var(--text-secondary); margin-bottom: 2rem; line-height: 1.5;">
+        Are you sure you want to delete <strong>"{{ item }}"</strong>? <br>
+        This will permanently remove this record from the database.
+    </p>
+
+    <form method="POST" style="display: inline-block; width: 100%;">
+        {% csrf_token %}
+        <div class="btn-group" style="justify-content: center; width: 100%;">
+            <button type="submit" class="btn btn-danger" style="flex-grow: 1;">Yes, Delete permanently</button>
+            <a href="{% url cancel_url %}" class="btn btn-secondary" style="flex-grow: 1;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

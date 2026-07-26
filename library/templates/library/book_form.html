@@ -1,0 +1,46 @@
+{% extends 'library/base.html' %}
+
+{% block title %}{{ title }} - Athena LMS{% endblock %}
+
+{% block content %}
+<div class="top-bar">
+    <div class="page-title">
+        <h1>{{ title }}</h1>
+        <p>Fill out the fields below to update the book inventory.</p>
+    </div>
+    <div>
+        <a href="{% url 'book_list' %}" class="btn btn-secondary">⬅️ Back to Catalog</a>
+    </div>
+</div>
+
+<div class="glass-card form-container">
+    <form method="POST" class="d-flex" style="flex-direction: column; gap: 1rem;">
+        <!-- Let's render fields manually with styling so they match the theme -->
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="message-alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <span class="form-help">{{ field.help_text }}</span>
+                {% endif %}
+                {% if field.errors %}
+                    <div class="errorlist">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="btn-group mt-4" style="margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-primary" style="flex-grow: 2;">Save Book Details</button>
+            <a href="{% url 'book_list' %}" class="btn btn-secondary" style="flex-grow: 1;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

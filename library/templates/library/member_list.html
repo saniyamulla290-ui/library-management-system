@@ -1,0 +1,73 @@
+{% extends 'library/base.html' %}
+
+{% block title %}Members Registry - Athena LMS{% endblock %}
+
+{% block content %}
+<div class="top-bar">
+    <div class="page-title">
+        <h1>Members Registry</h1>
+        <p>Manage member enrollment, contact details, and account status.</p>
+    </div>
+    <div>
+        <a href="{% url 'member_create' %}" class="btn btn-primary">➕ Register Member</a>
+    </div>
+</div>
+
+<!-- Search Widget -->
+<div class="glass-card mb-4">
+    <form method="GET" action="{% url 'member_list' %}" class="search-container">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search by name, email, or Membership ID..." class="form-control search-input">
+        <button type="submit" class="btn btn-primary">Search</button>
+        {% if query %}
+            <a href="{% url 'member_list' %}" class="btn btn-secondary">Clear</a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Members Table -->
+<div class="glass-card">
+    <div class="table-responsive">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Membership ID</th>
+                    <th>Name</th>
+                    <th>Email Address</th>
+                    <th>Phone Number</th>
+                    <th>Joined Date</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in members %}
+                    <tr>
+                        <td><code style="font-size: 0.9rem; color: #a5b4fc;">{{ member.membership_id }}</code></td>
+                        <td><strong>{{ member.first_name }} {{ member.last_name }}</strong></td>
+                        <td>{{ member.email }}</td>
+                        <td>{{ member.phone|default:"-" }}</td>
+                        <td>{{ member.joined_date }}</td>
+                        <td>
+                            {% if member.is_active %}
+                                <span class="badge badge-success">Active</span>
+                            {% else %}
+                                <span class="badge badge-danger">Suspended</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: right;">
+                            <div class="btn-group" style="justify-content: flex-end;">
+                                <a href="{% url 'member_edit' member.pk %}" class="btn btn-secondary btn-sm">✏️ Edit</a>
+                                <a href="{% url 'member_delete' member.pk %}" class="btn btn-danger btn-sm">🗑️ Delete</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center" style="color: var(--text-secondary); padding: 2rem 0;">No members registered yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

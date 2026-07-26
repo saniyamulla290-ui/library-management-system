@@ -1,0 +1,105 @@
+{% extends 'library/base.html' %}
+
+{% block title %}Transactions Log - Athena LMS{% endblock %}
+
+{% block content %}
+<div class="top-bar">
+    <div class="page-title">
+        <h1>Transactions Log</h1>
+        <p>Monitor book checkouts, dues, returns, and track overdue logs.</p>
+    </div>
+    <div>
+        <a href="{% url 'borrow_book' %}" class="btn btn-primary">🔄 Issue Book (Checkout)</a>
+    </div>
+</div>
+
+<!-- Search & Filters -->
+<div class="glass-card mb-4">
+    <form method="GET" action="{% url 'transaction_list' %}" class="d-flex" style="flex-wrap: wrap; gap: 1rem; align-items: center;">
+        <div class="search-container" style="flex-grow: 1;">
+            <input type="text" name="q" value="{{ query }}" placeholder="Search by member name, ID, or book title..." class="form-control search-input">
+        </div>
+        
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <label for="status" style="font-size: 0.9rem; color: var(--text-secondary); white-space: nowrap;">Filter Status:</label>
+            <select name="status" id="status" class="form-control" onchange="this.form.submit()" style="width: auto; padding-right: 2rem;">
+                <option value="">All Transactions</option>
+                <option value="BORROWED" {% if status_filter == 'BORROWED' %}selected{% endif %}>Borrowed (Active)</option>
+                <option value="RETURNED" {% if status_filter == 'RETURNED' %}selected{% endif %}>Returned</option>
+                <option value="OVERDUE" {% if status_filter == 'OVERDUE' %}selected{% endif %}>Overdue</option>
+            </select>
+        </div>
+
+        <div class="btn-group">
+            <button type="submit" class="btn btn-primary">Apply</button>
+            {% if query or status_filter %}
+                <a href="{% url 'transaction_list' %}" class="btn btn-secondary">Clear</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- Transactions Table -->
+<div class="glass-card">
+    <div class="table-responsive">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Book Checked Out</th>
+                    <th>Issued To</th>
+                    <th>Issue Date</th>
+                    <th>Due Date</th>
+                    <th>Return Date</th>
+                    <th>Status</th>
+                    <th style="text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for txn in transactions %}
+                    <tr>
+                        <td><span style="color: var(--text-secondary);">#{{ txn.id }}</span></td>
+                        <td>
+                            <div style="display: flex; flex-direction: column;">
+                                <strong>{{ txn.book.title }}</strong>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary);">by {{ txn.book.author }}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: flex; flex-direction: column;">
+                                <span>{{ txn.member.first_name }} {{ txn.member.last_name }}</span>
+                                <code style="font-size: 0.75rem; color: #a5b4fc;">{{ txn.member.membership_id }}</code>
+                            </div>
+                        </td>
+                        <td>{{ txn.borrow_date }}</td>
+                        <td>{{ txn.due_date }}</td>
+                        <td>{{ txn.return_date|default:"-" }}</td>
+                        <td>
+                            {% if txn.status == 'RETURNED' %}
+                                <span class="badge badge-success">Returned</span>
+                            {% elif txn.status == 'OVERDUE' %}
+                                <span class="badge badge-danger">Overdue</span>
+                            {% else %}
+                                <span class="badge badge-info">Borrowed</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align: right;">
+                            {% if txn.status == 'BORROWED' or txn.status == 'OVERDUE' %}
+                                <a href="{% url 'return_book' txn.pk %}" class="btn btn-primary btn-sm" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2);">
+                                    ↩️ Return Book
+                                </a>
+                            {% else %}
+                                <span style="font-size: 0.85rem; color: var(--text-secondary);">Completed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="8" class="text-center" style="color: var(--text-secondary); padding: 2rem 0;">No matching transactions found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'library/base.html' %}
+
+{% block title %}Register Member - Athena LMS{% endblock %}
+
+{% block content %}
+<div class="top-bar">
+    <div class="page-title">
+        <h1>{{ title }}</h1>
+        <p>Enter member details to save or update their profile credentials.</p>
+    </div>
+    <div>
+        <a href="{% url 'member_list' %}" class="btn btn-secondary">⬅️ Back to Registry</a>
+    </div>
+</div>
+
+<div class="glass-card form-container">
+    <form method="POST" class="d-flex" style="flex-direction: column; gap: 1rem;">
+        {% csrf_token %}
+        
+        {% if form.non_field_errors %}
+            <div class="message-alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <span class="form-help">{{ field.help_text }}</span>
+                {% endif %}
+                {% if field.errors %}
+                    <div class="errorlist">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="btn-group mt-4" style="margin-top: 1.5rem;">
+            <button type="submit" class="btn btn-primary" style="flex-grow: 2;">Save Member Details</button>
+            <a href="{% url 'member_list' %}" class="btn btn-secondary" style="flex-grow: 1;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

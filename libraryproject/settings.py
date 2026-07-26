@@ -62,12 +62,14 @@ TEMPLATES = [
 WSGI_APPLICATION = 'libraryproject.wsgi.application'
 
 # Database fallback for local testing, pulls production DB from environment on Render
+# Database fallback configuration for Render build steps
 DATABASES = {
     'default': dj_database_url.config(
-        default='mysql://root:Root%40123@127.0.0.1:3306/library_db',
+        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600
     )
 }
+
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
